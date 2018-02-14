@@ -52,7 +52,6 @@ public class UserServiceImp {
 			Role role=roleRepository.findRoleByRoleName(userdto.getRole());
 			user.setRole(role);
 			userRepository.save(user);
-	
 		
 	}
 	

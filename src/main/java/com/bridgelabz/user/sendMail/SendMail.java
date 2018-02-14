@@ -10,12 +10,12 @@ public class SendMail {
 	@Autowired
 	private  JavaMailSender javaMailSender;
 
-	public void sendMail(String to, String subject, String msg,String url)
+	public void sendMail(String to, String subject, String msg)
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
-		message.setText(msg+" "+"http://"+url);
+		message.setText(msg);
 
 		try
 		{
