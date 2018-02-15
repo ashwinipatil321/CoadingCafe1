@@ -7,16 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.user.model.Response;
 import com.bridgelabz.user.model.User;
 import com.bridgelabz.user.model.UserDto;
+import com.bridgelabz.user.model.UserOTP;
 import com.bridgelabz.user.sendMail.SendMail;
 import com.bridgelabz.user.service.RedisUserServiceImp;
 import com.bridgelabz.user.service.UserServiceImp;
@@ -55,6 +53,7 @@ public class UserController {
 		return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
 	}
 
+	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<Response> registerUser(@RequestBody User user) {
 
@@ -76,47 +75,46 @@ public class UserController {
 		return new ResponseEntity<Response>(response,HttpStatus.BAD_REQUEST);
 	}
 
-	@SuppressWarnings("unused")
-	@RequestMapping(value = "/loginUser", method = RequestMethod.POST)
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/sendOTP", method = RequestMethod.POST)
 	public ResponseEntity<Response> loginUser(@RequestBody User user,HttpServletRequest request) {
 
 		int otpNumber = 0;
 		Random random = new Random();
-		otpNumber = random.nextInt();
-
-		User userEmail = userService.getUserByEmail(user.getEmail());
-		String email = userEmail.getEmail();
-		User UserContactNumber = userService.getUserByContactNumber(user.getContactNumber());
+		otpNumber = random.nextInt(900000) + 100000;
+		String email=user.getEmail();
 		String to = email;
 		String msg = "The One Time Password (OTP) for your login on CoadingCafe is " + otpNumber;
 		String subject = "Verfiy Mail";
 
-		if(userEmail!=null || UserContactNumber!=null)
+		User userEmail = userService.getUserByEmail(email);
+		if(userEmail.getEmail().equals(email))
 		{
-
 			sendMail.sendMail(to, subject, msg);
 			redisService.saveOTP(otpNumber,email);
 			response.setMessage("User login successfully......");
 			return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
 		}
 		response.setMessage("User not present in database ......");
-		return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
+		return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
 	}
-	
-	@RequestMapping(value = "/verifyOTP", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public ResponseEntity<Response> verifyOTP(@RequestParam int userOtp,@RequestParam String email) {
-		
-		System.out.println("userOtp.....>"+userOtp);
+
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/verifyOTP", method = RequestMethod.POST)
+	public ResponseEntity<Response> verifyOTP(@RequestBody UserOTP userOTP ) {
+
+		int otp = userOTP.getUserOTP();
+		String email=userOTP.getEmail();
+		System.out.println("userOtp.....>"+otp);
 		System.out.println("email.....>"+email);
 		int afterfoundotp = redisService.findOTP(email);
-		System.out.println("afterfoundotp"+afterfoundotp);
-		if(afterfoundotp==userOtp)
+
+		if(otp==afterfoundotp)
 		{
 			response.setMessage("valid otp ......");
 			return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
 		}
-		response.setMessage("OTP is not valid ......");
+		response.setMessage(" You Enter Wrong OTP  ......");
 		return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
 	}
 }

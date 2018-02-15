@@ -4,6 +4,8 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
 public class RedisUserServiceImp implements RedisUserService{
 
@@ -14,9 +16,11 @@ public class RedisUserServiceImp implements RedisUserService{
 	@Override
 	public int findOTP(String email) {
 		
-		HashOperations<String, String,Integer> hashOperations = redisTemplate.opsForHash();
-		int foundotp = hashOperations.get(KEY, email);
-		return foundotp;
+		HashOperations<String, String, Long> hashOperations = redisTemplate.opsForHash();
+		
+		long foundotp = hashOperations.get(KEY, email);
+		System.out.println("foundotp" +foundotp);
+		return (int) foundotp;
 	}
 
 	@Override
