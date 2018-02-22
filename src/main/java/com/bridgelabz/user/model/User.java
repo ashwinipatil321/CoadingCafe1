@@ -1,10 +1,7 @@
 package com.bridgelabz.user.model;
 
-import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,6 +26,7 @@ public class User {
 
 	@Column(name = "contactNumber")
 	private String contactNumber;
+	
 
 	@ManyToOne
 	private Role role;
@@ -72,4 +70,5 @@ public class User {
 	public void setRole(Role role) {
 		this.role = role;
 	}
+	
 }

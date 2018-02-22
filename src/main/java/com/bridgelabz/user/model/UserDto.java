@@ -4,6 +4,7 @@ public class UserDto {
 
 	private String email;
 	private String role;
+
 	
 	public String getEmail() {
 		return email;
