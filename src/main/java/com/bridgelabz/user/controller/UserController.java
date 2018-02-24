@@ -4,34 +4,29 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.bridgelabz.user.Utility.Validation;
 import com.bridgelabz.user.model.Response;
-import com.bridgelabz.user.model.User;
 import com.bridgelabz.user.model.UserDto;
 import com.bridgelabz.user.model.UserOTP;
 import com.bridgelabz.user.model.UserRegisterDto;
 import com.bridgelabz.user.sendMail.SendMail;
 import com.bridgelabz.user.service.RedisUserServiceImp;
-import com.bridgelabz.user.service.UserServiceImp;
+import com.bridgelabz.user.service.UserService;
 
 @RestController
 public class UserController {
 
 	@Autowired
-	UserServiceImp userService;
+	UserService userService;
 	Response response = new Response();
 
 	@Autowired
@@ -102,5 +97,26 @@ public class UserController {
 		}
 		response.setMessage(" You Enter Wrong OTP  ......");
 		return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/getcontributorcount", method = RequestMethod.GET)
+	public long getContributorCount() {
+
+		return userService.getCount("contributor");
+	}
+
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/getapprovercount", method = RequestMethod.GET)
+	public long getApproverCount()
+	{
+		return userService.getCount("approval");
+	}
+
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/getviewercount", method = RequestMethod.GET)
+	public long getViewerCount()
+	{
+		return userService.getCount("viewer");
 	}
 }

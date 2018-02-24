@@ -11,7 +11,7 @@ import com.bridgelabz.user.model.UserRegisterDto;
 
 public interface UserService {
 	public User getUserByEmail(String email) ;
-
+	public long getCount(String roleName) ;
 	public User saveUser(User user);
 	public User registerUser(UserRegisterDto userRegisterDto);
 	public User getUserByContactNumber(String contactNumber);

@@ -1,4 +1,5 @@
 package com.bridgelabz.user.service;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.user.Utility.Validation;
 import com.bridgelabz.user.model.Role;
 import com.bridgelabz.user.model.User;
 import com.bridgelabz.user.model.UserDto;
@@ -27,15 +29,18 @@ public class UserServiceImp implements UserService {
 
 	@Autowired
 	RoleRepository roleRepository;
-	
+
 	@Autowired
 	UuidRepository uuidRepository;
 
 	@Autowired
 	RedisUserService redisService;
-	
+
 	@Autowired
 	SendMail sendMail;
+
+	@Autowired
+	Validation validation;
 
 	public User getUserByEmail(String email) {
 		return userRepository.findUserByEmail(email);
@@ -49,14 +54,20 @@ public class UserServiceImp implements UserService {
 
 	public User registerUser(UserRegisterDto userRegisterDto) {
 		UserUUID userUUID = uuidRepository.findByUid(userRegisterDto.getUuid());
-		User user=userRepository.findUserByEmail(userUUID.getEmail());
+		User user = userRepository.findUserByEmail(userUUID.getEmail());
 		user.setContactNumber(userRegisterDto.getContactNumber());
 		user.setName(userRegisterDto.getName());
 		userRepository.save(user);
 		uuidRepository.delete(userUUID);
-		redisService.save("EmailPhone", user.getEmail());
-		redisService.save("EmailPhone", user.getContactNumber());
-		
+		String email = user.getEmail();
+		String contactNumber = user.getContactNumber();
+		boolean validContactNumber = Validation.mobileValidation(contactNumber);
+		boolean validEmail =  Validation.emailValidation(email);
+		if(validContactNumber== true && validEmail==true)
+		{
+		redisService.save("EmailPhone", email);
+		redisService.save("EmailPhone", contactNumber);
+		}
 		return user;
 	}
 
@@ -69,38 +80,51 @@ public class UserServiceImp implements UserService {
 	}
 
 	public void saveUserList(List<UserDto> users) {
-		
+
 		for (UserDto userdto : users) {
+
 			User user = new User();
-			String email=userdto.getEmail();
-			user.setEmail(email);
 			Role role = roleRepository.findRoleByRoleName(userdto.getRole());
-			user.setRole(role);
-			userRepository.save(user);
+			String email = userdto.getEmail();
+			boolean emailValid = Validation.emailValidation(email);
+			if (emailValid==true && email!=null) {
+				user.setEmail(email);
+				user.setRole(role);
+				userRepository.save(user);
+			} else {
+				System.out.println("Email is not valid......");
+			}
 		}
 	}
-	public void sendEmail(List<UserDto> users,HttpServletRequest request) throws MalformedURLException
-	{
+
+	public void sendEmail(List<UserDto> users, HttpServletRequest request) throws MalformedURLException {
 		String urlRedirect;
 		URL url;
-		UserUUID userUUID=new UserUUID();
-		
-		for(UserDto userdto : users)
-		{
-			String to = userdto.getEmail();
-			String msg = "click link to verfiy your account ";
-			String subject = "Verfiy Mail";
-			String  uniqueId = UUID.randomUUID().toString();
+		UserUUID userUUID = new UserUUID();
 
-			userUUID.setEmail(to);
-			userUUID.setUid(uniqueId);
-			uuidRepository.save(userUUID);
-			url = new URL(request.getRequestURL().toString());
-			urlRedirect = url.getProtocol()+"://"+ url.getHost()+":"+4200+ "/"+ request.getContextPath();
-			System.out.println("url........." +url);
-			System.out.println("urlRedirect........." +urlRedirect);
-			msg = msg+" "+urlRedirect+"registeration/"+uniqueId;
-			sendMail.sendMail(to, subject, msg);
+		for (UserDto userdto : users) {
+				String email = userdto.getEmail();
+				String to = email;
+				String msg = "click link to verfiy your account ";
+				String subject = "Verfiy Mail";
+				String uniqueId = UUID.randomUUID().toString();
+				userUUID.setEmail(to);
+				userUUID.setUid(uniqueId);
+				uuidRepository.save(userUUID);
+				url = new URL(request.getRequestURL().toString());
+				urlRedirect = url.getProtocol() + "://" + url.getHost() + ":" + 4200 + "/" + request.getContextPath();
+				System.out.println("url........." + url);
+				System.out.println("urlRedirect........." + urlRedirect);
+				msg = msg + " " + urlRedirect + "registeration/" + uniqueId;
+				sendMail.sendMail(to, subject, msg);
+			} 
 		}
+	
+
+	public long getCount(String roleName) {
+
+		Role role = roleRepository.findRoleByRoleName(roleName);
+		return userRepository.getCount(role);
 	}
+	
 }
