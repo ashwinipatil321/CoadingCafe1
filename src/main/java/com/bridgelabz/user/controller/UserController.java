@@ -241,9 +241,9 @@ public class UserController {
 	@RequestMapping(value = "/getcontributors", method = RequestMethod.GET)
 	public ResponseEntity<?> getContributors() {
 		try {
-			
+
 			List<UserDetailDto> dtos = userService.getContribuors();
-		
+
 			return new ResponseEntity<List<UserDetailDto>>(dtos, HttpStatus.OK);
 		} catch (Exception e) {
 			Response response = new Response();

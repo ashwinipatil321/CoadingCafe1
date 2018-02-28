@@ -24,6 +24,7 @@ public class RedisConfigration {
 	    return jedisConnectionFactory;
 	}
 	
+
 	/**
 	 * redisTemplate setting connectivity with redis
 	 * @return
