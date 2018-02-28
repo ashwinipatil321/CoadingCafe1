@@ -1,20 +1,39 @@
 package com.bridgelabz.user.model;
 
-import java.io.Serializable;
-
-public class Response implements Serializable {
 /**
-	 * 
+ * @author Ashwini
+ *
+ */
+public class Response {
+
+	private String message;
+	private int status;
+
+	/**
+	 * @return response  status
 	 */
-	private static final long serialVersionUID = 1L;
-private String message;
+	public int getStatus() {
+		return status;
+	}
 
-public String getMessage() {
-	return message;
-}
+	/**
+	 * @param status
+	 */
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
-public void setMessage(String message) {
-	this.message = message;
-}
+	/**
+	 * @return response message
+	 */
+	public String getMessage() {
+		return message;
+	}
 
+	/**
+	 * @param message
+	 */
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

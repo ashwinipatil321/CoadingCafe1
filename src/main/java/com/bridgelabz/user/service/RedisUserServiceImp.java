@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 
 
+/**
+ * @author Ashwini Patil
+ *
+ */
 @Service
 public class RedisUserServiceImp implements RedisUserService{
 
@@ -16,6 +20,9 @@ public class RedisUserServiceImp implements RedisUserService{
 	private RedisTemplate<String, Object> redisTemplate;
 	private static final String KEY = "otpKey";
 
+	/* (non-Javadoc)
+	 * @see com.bridgelabz.user.service.RedisUserService#findOTP(java.lang.String)
+	 */
 	@Override
 	public String findOTP(String email) {
 		
@@ -25,6 +32,9 @@ public class RedisUserServiceImp implements RedisUserService{
 		return foundotp;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.bridgelabz.user.service.RedisUserService#save(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void save(String key, String hkey, String hvalue) {
 		
@@ -32,19 +42,22 @@ public class RedisUserServiceImp implements RedisUserService{
 		hashOperations.put(key ,hkey,hvalue);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.bridgelabz.user.service.RedisUserService#save(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void save(String key, String value) {
 		SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
 		Long returnValue = setOperations.add(key, value);
 		System.out.println(returnValue+" "+key);
 	}
-	public void getData(String key)
-	{
-		SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
-		Set<Object> member = setOperations.members(key);
-		System.out.println(member.toString());
-	}
 	
+	/**
+	 * chech user exits in redis or not
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	public boolean isMember(String key, String value) {
 		SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
 		return setOperations.isMember(key, value);

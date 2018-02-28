@@ -9,6 +9,10 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * @author Ashwini
+ *
+ */
 @Entity
 @Table(name="UserUUID")
 public class UserUUID {
@@ -24,15 +28,31 @@ public class UserUUID {
 	@Column(name="email")
 	private String email;
 	
+	/**
+	 * @return uuid
+	 */
 	public String getUid() {
 		return uid;
 	}
+	
+	/**
+	 * 
+	 * @return email
+	 */
 	public String getEmail() {
 		return email;
 	}
+	
+	/**
+	 * @param uid
+	 */
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+	
+	/**
+	 * @param email
+	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
