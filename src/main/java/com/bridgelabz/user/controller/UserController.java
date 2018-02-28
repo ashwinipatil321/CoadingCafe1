@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.user.model.Response;
-import com.bridgelabz.user.model.User;
 import com.bridgelabz.user.model.UserDetailDto;
 import com.bridgelabz.user.model.UserDto;
 import com.bridgelabz.user.model.UserOTP;
